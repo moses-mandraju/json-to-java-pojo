@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root { height: 100%; }
+:root {
+  color-scheme: light;
+  --page: #f4f7fb;
+  --surface: #ffffff;
+  --surface-muted: #eef3f8;
+  --ink: #172033;
+  --muted: #637083;
+  --line: #d9e1eb;
+  --accent: #0e7490;
+  --accent-soft: #cffafe;
+}
+
+.dark {
+  color-scheme: dark;
+  --page: #0b1120;
+  --surface: #111a2b;
+  --surface-muted: #172338;
+  --ink: #e8eef7;
+  --muted: #9ba9bc;
+  --line: #2a3950;
+  --accent: #67e8f9;
+  --accent-soft: #164e63;
+}
+
+body {
+  margin: 0;
+  background-color: var(--page);
+  background-image: linear-gradient(rgba(14, 116, 144, 0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(14, 116, 144, 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+button, input, select { font: inherit; }
+button { cursor: pointer; }
+button:hover { border-color: var(--accent); }
+input, select {
+  background: var(--surface);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.tool-panel {
+  background: var(--surface);
+  border-color: var(--line);
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.06);
+}
+
+.dark .tool-panel { box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2); }
+.tool-button { background: var(--surface); color: var(--ink); border-color: var(--line); }
+.tool-button-primary { background: var(--accent); color: #06202a; border-color: var(--accent); }
+.muted-copy { color: var(--muted); }
+.status-bar { color: var(--muted); border-color: var(--line); }
+
+.brand-mark { display: flex; align-items: center; gap: 10px; }
+.brand-mark-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: #06202a; font: 700 12px ui-monospace, monospace; }
+.privacy-banner { display: flex; align-items: center; gap: 9px; margin: 14px auto 0; padding: 10px 16px; max-width: 1800px; width: calc(100% - 32px); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); color: var(--ink); font-size: 13px; }
+.privacy-banner svg { color: var(--accent); flex: 0 0 auto; }
+.privacy-banner strong { color: var(--accent); }
+.privacy-banner-detail { color: var(--muted); margin-left: auto; }
+.tool-intro { padding: 20px 4px 8px; }
+.intro-kicker { display: flex; align-items: center; gap: 7px; color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.tool-intro h2 { margin: 8px 0 5px; font-size: clamp(24px, 3vw, 38px); line-height: 1.08; letter-spacing: -.02em; }
+.tool-intro h2 span { color: var(--accent); }
+.tool-intro p { margin: 0; color: var(--muted); font-size: 14px; }
+.intro-flow { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 600 11px ui-monospace, monospace; white-space: nowrap; }
+
+@media (max-width: 700px) {
+  .privacy-banner { align-items: flex-start; flex-wrap: wrap; }
+  .privacy-banner-detail { width: 100%; margin-left: 27px; }
+  .intro-flow { display: none; }
+}
+
+.editor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Segoe UI Mono', monospace;
+}
+
+.cm-editor { min-height: 100%; background: var(--surface); color: var(--ink); }
+.cm-focused { outline: 2px solid var(--accent) !important; outline-offset: -2px; }
+.cm-gutters { background: var(--surface-muted); color: var(--muted); border-color: var(--line); }
+.cm-placeholder { color: var(--muted); white-space: pre; opacity: .72; }
+.options-heading h3 { margin: 0; font-size: 14px; font-weight: 700; }
+.options-heading p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.advanced-options { border-top: 1px solid var(--line); padding-top: 10px; }
+.advanced-options summary { cursor: pointer; color: var(--ink); font-size: 13px; font-weight: 700; list-style-position: inside; }
+.advanced-options summary span { color: var(--muted); font-size: 11px; font-weight: 400; margin-left: 5px; }
+.advanced-options-content { padding: 12px 3px 2px; }
