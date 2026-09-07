@@ -36,6 +36,8 @@ export default function App() {
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
     window.localStorage.setItem('json-to-java-theme', theme)
+    const favicon = document.getElementById('app-favicon') as HTMLLinkElement | null
+    if (favicon) favicon.href = `/moses_mandraju_${theme === 'dark' ? 'dark' : 'light'}.png.png`
   }, [theme])
 
   useEffect(() => {
