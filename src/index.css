@@ -57,8 +57,11 @@ input, select {
 .muted-copy { color: var(--muted); }
 .status-bar { color: var(--muted); border-color: var(--line); }
 
-.brand-mark { display: flex; align-items: center; gap: 10px; }
-.brand-mark-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: #06202a; font: 700 12px ui-monospace, monospace; }
+.navbar { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; }
+.navbar-logo { display: flex; align-items: center; justify-content: flex-start; min-width: 0; }
+.navbar-logo img { display: block; width: auto; height: 28px; max-width: 120px; object-fit: contain; }
+.navbar-title { min-width: 0; text-align: center; }
+.navbar-title h1, .navbar-title p { white-space: nowrap; }
 .privacy-banner { display: flex; align-items: center; gap: 9px; margin: 14px auto 0; padding: 10px 16px; max-width: 1800px; width: calc(100% - 32px); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--accent-soft) 55%, var(--surface)); color: var(--ink); font-size: 13px; }
 .privacy-banner svg { color: var(--accent); flex: 0 0 auto; }
 .privacy-banner strong { color: var(--accent); }
@@ -71,6 +74,12 @@ input, select {
 .intro-flow { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 600 11px ui-monospace, monospace; white-space: nowrap; }
 
 @media (max-width: 700px) {
+  .navbar { grid-template-columns: auto minmax(0, 1fr) auto; gap: 8px; padding-left: 12px; padding-right: 12px; }
+  .navbar-logo img { height: 22px; max-width: 76px; }
+  .navbar-title h1 { font-size: 16px; }
+  .navbar-title p { display: none; }
+  .navbar .flex { gap: 2px; }
+  .navbar .flex button, .navbar .flex a { padding: 6px; }
   .privacy-banner { align-items: flex-start; flex-wrap: wrap; }
   .privacy-banner-detail { width: 100%; margin-left: 27px; }
   .intro-flow { display: none; }
