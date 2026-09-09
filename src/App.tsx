@@ -9,6 +9,7 @@ import { safeParseJson } from './generator/jsonParser'
 import { generateClassesFromJson, renderJavaClass } from './generator/classGenerator'
 import { createZip } from './utils/zip'
 import { JavaClass } from './types'
+import SeoContent from './components/SeoContent'
 
 export default function App() {
   const [jsonText, setJsonText] = useState('')
@@ -101,7 +102,7 @@ export default function App() {
   }
 
   return (
-    <div className="h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col">
       <Header onClear={() => setJsonText('')} theme={theme} toggleTheme={() => setTheme(t => t === 'dark' ? 'light' : 'dark')} />
       <div className="privacy-banner" role="status">
         <ShieldCheck size={18} aria-hidden="true" />
@@ -135,6 +136,7 @@ export default function App() {
         </section>
         </div>
       </main>
+      <SeoContent />
       <footer className="px-4 py-3 text-sm muted-copy border-t">Built for fast, private transformations in your browser.</footer>
     </div>
   )

@@ -99,3 +99,37 @@ input, select {
 .advanced-options summary { cursor: pointer; color: var(--ink); font-size: 13px; font-weight: 700; list-style-position: inside; }
 .advanced-options summary span { color: var(--muted); font-size: 11px; font-weight: 400; margin-left: 5px; }
 .advanced-options-content { padding: 12px 3px 2px; }
+
+.seo-content {
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-muted) 52%, var(--page));
+}
+.seo-content-inner { width: min(1120px, calc(100% - 32px)); margin: 0 auto; padding: 72px 0 76px; }
+.seo-lead { max-width: 760px; margin-bottom: 30px; }
+.seo-lead h2, .seo-faq h2 { margin: 8px 0 10px; font-size: clamp(24px, 3vw, 34px); line-height: 1.12; letter-spacing: -.02em; }
+.seo-lead > p:last-child { color: var(--muted); font-size: 16px; line-height: 1.7; margin: 0; }
+.seo-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.seo-card { padding: 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface); }
+.seo-card-wide { grid-column: span 2; }
+.seo-card h2 { margin: 0 0 12px; font-size: 19px; line-height: 1.25; }
+.seo-card p, .seo-card li, .faq-list p { color: var(--muted); font-size: 14px; line-height: 1.7; }
+.seo-card p { margin: 0 0 10px; }
+.seo-card p:last-child { margin-bottom: 0; }
+.seo-card ol { margin: 0; padding-left: 22px; }
+.seo-card li + li { margin-top: 7px; }
+.seo-card strong { color: var(--ink); }
+.seo-feature-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.seo-feature-list span { padding: 8px 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface-muted); color: var(--ink); font-size: 13px; }
+.seo-faq { display: grid; grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr); gap: 38px; padding-top: 64px; }
+.seo-faq-heading h2 { font-size: 27px; }
+.faq-list { border-top: 1px solid var(--line); }
+.faq-list details { border-bottom: 1px solid var(--line); }
+.faq-list summary { cursor: pointer; padding: 17px 4px; color: var(--ink); font-size: 15px; font-weight: 700; list-style-position: inside; }
+.faq-list p { margin: 0; padding: 0 28px 18px 25px; }
+
+@media (max-width: 760px) {
+  .seo-content-inner { padding: 48px 0 56px; }
+  .seo-grid, .seo-faq { grid-template-columns: 1fr; }
+  .seo-card-wide { grid-column: auto; }
+  .seo-faq { gap: 22px; padding-top: 44px; }
+}
