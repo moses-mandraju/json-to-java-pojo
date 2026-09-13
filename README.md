@@ -1,17 +1,16 @@
-# JSON to Java POJO Generator
+# JSON to Code Generator
 
 Convert JSON to clean Java POJOs instantly. This is a client-side React + TypeScript app built with Vite and Tailwind.
 
  JSON to Java POJO Generator
 
- Fast, private developer utility for converting JSON payloads into clean Java POJO, DTO, Lombok, or record source files. JSON parsing and code generation run entirely in the browser.
+Fast, private developer utility for converting JSON payloads into clean Java, C#, and TypeScript source files. JSON parsing and code generation run entirely in the browser.
 
  ## Features
 
- - Recursive generation for nested objects, primitive arrays, object arrays, nulls, empty arrays, and mixed arrays
- - Configurable root class, package, naming strategy, integer type, wrapper types, getters/setters, and date detection
- - Jackson `@JsonProperty` and Gson `@SerializedName` annotations
- - Java Records and Lombok `@Data`
+- Java POJO generation with Records, Lombok, Jackson, Gson, packages, naming, type mappings, and date detection
+- C# class generation and TypeScript interface generation from the same shared JSON model
+- Recursive generation for nested objects, primitive arrays, object arrays, nulls, empty arrays, and mixed arrays
  - Copy, single-class download, and ZIP download for all generated classes
  - CodeMirror JSON editor with syntax highlighting, folding, and line numbers
  - Light/dark themes, keyboard shortcuts, validation status, character counts, and large-input warnings
@@ -23,7 +22,7 @@ Convert JSON to clean Java POJOs instantly. This is a client-side React + TypeSc
  ## Architecture
 
  - `src/components/` contains the editor, options, output, header, and sample UI.
- - `src/generator/` contains parsing, type inference, naming, and Java rendering logic independent of React.
+- `src/generator/` contains shared parsing, type inference, model building, and language renderers independent of React.
  - `src/utils/` contains browser download helpers.
  - `tests/` contains Vitest tests for the generation engine.
 
@@ -34,7 +33,9 @@ Convert JSON to clean Java POJOs instantly. This is a client-side React + TypeSc
  npm run dev
  ```
 
- Open the URL printed by Vite, normally `http://localhost:5173`.
+Open the URL printed by Vite, normally `http://localhost:5173`.
+
+Choose `Java POJO`, `C# Class`, or `TypeScript Interface` in the generated-code panel. Java-specific options are shown only for the Java target.
 
  ## Verification
 

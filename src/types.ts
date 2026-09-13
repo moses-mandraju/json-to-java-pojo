@@ -2,6 +2,34 @@ export type JsonValue = null | boolean | number | string | JsonObject | JsonArra
 export interface JsonObject { [key: string]: JsonValue }
 export interface JsonArray extends Array<JsonValue> {}
 
+export type TargetLanguage = 'java' | 'csharp' | 'typescript'
+
+export type CommonType =
+  | { kind: 'string' }
+  | { kind: 'boolean' }
+  | { kind: 'integer' }
+  | { kind: 'double' }
+  | { kind: 'date' }
+  | { kind: 'null' }
+  | { kind: 'object'; className: string }
+  | { kind: 'array'; element: CommonType }
+
+export interface CommonField {
+  name: string
+  jsonName: string
+  type: CommonType
+}
+
+export interface CommonClass {
+  name: string
+  fields: CommonField[]
+}
+
+export interface CodeFile {
+  name: string
+  content: string
+}
+
 export interface GeneratorOptions {
   rootClassName: string
   packageName?: string
@@ -31,4 +59,5 @@ export interface JavaClass {
   fields: JavaField[]
   isRecord?: boolean
   useLombok?: boolean
+  model?: CommonClass
 }

@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function GeneratorOptions({ options, setOptions }: { options: any; setOptions: (o: any) => void }) {
+export default function GeneratorOptions({ options, setOptions, language }: { options: any; setOptions: (o: any) => void; language: 'java' | 'csharp' | 'typescript' }) {
   return (
     <div className="p-3 border-t space-y-3">
       <div className="options-heading">
@@ -19,7 +19,7 @@ export default function GeneratorOptions({ options, setOptions }: { options: any
         <input className="w-full p-2 border rounded mt-1" value={options.packageName || ''} onChange={e => setOptions({ ...options, packageName: e.target.value || undefined })} />
       </div>
 
-      <details className="advanced-options">
+      {language === 'java' && <details className="advanced-options">
         <summary>Advanced options <span>Type mapping, annotations, naming</span></summary>
         <div className="advanced-options-content space-y-3">
           <div className="flex flex-wrap gap-3">
@@ -60,7 +60,7 @@ export default function GeneratorOptions({ options, setOptions }: { options: any
             </div>
           </div>
         </div>
-      </details>
+      </details>}
     </div>
   )
 }

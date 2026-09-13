@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest'
 import { generateClassesFromJson, renderJavaClass } from '../src/generator/classGenerator'
 import { safeParseJson } from '../src/generator/jsonParser'
+import { buildCommonModel } from '../src/generator/modelBuilder'
+import { renderCSharpModel } from '../src/generator/csharpRenderer'
+import { renderTypeScriptModel } from '../src/generator/typescriptRenderer'
 
 describe('Generator comprehensive', () => {
   it('simple object', () => {
@@ -139,5 +142,23 @@ describe('Generator comprehensive', () => {
     const out = renderJavaClass(classes[0], { rootClassName: 'User', fieldNaming: 'camelCase', annotationStyle: 'gson' })
     expect(out).toContain('import com.google.gson.annotations.SerializedName;')
     expect(out).toContain('@SerializedName("first_name")')
+  })
+
+  it('renders nested JSON as C# classes from the shared model', () => {
+    const models = buildCommonModel({ user: { id: 1 }, tags: ['java'] }, { rootClassName: 'Response', fieldNaming: 'camelCase' })
+    const root = models[0]
+    const out = renderCSharpModel(root)
+    expect(out).toContain('public class Response')
+    expect(out).toContain('public User User')
+    expect(out).toContain('List<string> Tags')
+  })
+
+  it('renders nested JSON as TypeScript interfaces from the shared model', () => {
+    const models = buildCommonModel({ user: { id: 1 }, tags: ['java'] }, { rootClassName: 'Response', fieldNaming: 'camelCase' })
+    const root = models[0]
+    const out = renderTypeScriptModel(root)
+    expect(out).toContain('export interface Response')
+    expect(out).toContain('user: User;')
+    expect(out).toContain('tags: string[];')
   })
 })

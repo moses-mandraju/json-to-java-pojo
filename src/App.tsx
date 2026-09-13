@@ -6,12 +6,17 @@ import JavaOutput from './components/JavaOutput'
 import GeneratorOptions from './components/GeneratorOptions'
 import SampleSelector from './components/SampleSelector'
 import { safeParseJson } from './generator/jsonParser'
-import { generateClassesFromJson, renderJavaClass } from './generator/classGenerator'
+import { buildCommonModel } from './generator/modelBuilder'
+import { renderJavaModel } from './generator/javaRenderer'
+import { renderCSharpModel } from './generator/csharpRenderer'
+import { renderTypeScriptModel } from './generator/typescriptRenderer'
 import { createZip } from './utils/zip'
-import { JavaClass } from './types'
+import { CodeFile, CommonClass, TargetLanguage } from './types'
 import SeoContent from './components/SeoContent'
+import { getRouteConfig } from './seo/routeConfig'
 
 export default function App() {
+  const routeConfig = getRouteConfig(window.location.pathname)
   const [jsonText, setJsonText] = useState('')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = window.localStorage.getItem('json-to-java-theme')
@@ -31,7 +36,8 @@ export default function App() {
     fieldNaming: 'preserve'
   })
   const [error, setError] = useState<string | null>(null)
-  const [classes, setClasses] = useState<JavaClass[]>([])
+  const [language, setLanguage] = useState<TargetLanguage>(routeConfig.language)
+  const [classes, setClasses] = useState<CommonClass[]>([])
   const [selectedClassName, setSelectedClassName] = useState('')
 
   useEffect(() => {
@@ -42,6 +48,19 @@ export default function App() {
   }, [theme])
 
   useEffect(() => {
+    document.title = routeConfig.title
+    const description = document.querySelector('meta[name="description"]')
+    description?.setAttribute('content', routeConfig.description)
+    const canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null
+    canonical?.setAttribute('href', `https://json-to-java-pojo.vercel.app${routeConfig.path}`)
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', `https://json-to-java-pojo.vercel.app${routeConfig.path}`)
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', routeConfig.title)
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', routeConfig.ogDescription)
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', routeConfig.title)
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', routeConfig.description)
+  }, [routeConfig])
+
+  useEffect(() => {
     const timer = window.setTimeout(() => {
       if (!jsonText.trim()) {
         setError(null)
@@ -50,17 +69,20 @@ export default function App() {
         return
       }
       const parsed = safeParseJson(jsonText)
-      if (parsed.error) { setError(parsed.error); setClasses([]); setSelectedClassName(''); return }
+      if (parsed.error || parsed.value === undefined) { setError(parsed.error || 'Unable to parse JSON'); setClasses([]); setSelectedClassName(''); return }
       setError(null)
-      const cls = generateClassesFromJson(parsed.value, options)
+      const cls = buildCommonModel(parsed.value, options)
       setClasses(cls)
       setSelectedClassName(current => cls.some(javaClass => javaClass.name === current) ? current : cls[0]?.name || '')
     }, 120)
     return () => window.clearTimeout(timer)
   }, [jsonText, options])
 
-  const selectedClass = classes.find(javaClass => javaClass.name === selectedClassName) || classes[0]
-  const code = useMemo(() => selectedClass ? renderJavaClass(selectedClass, options) : '// Generated code will appear here', [selectedClass, options])
+  const selectedClass = classes.find(item => item.name === selectedClassName) || classes[0]
+  const renderModel = (model: CommonClass) => language === 'java' ? renderJavaModel(model, options) : language === 'csharp' ? renderCSharpModel(model) : renderTypeScriptModel(model)
+  const files: CodeFile[] = useMemo(() => classes.map(model => ({ name: `${model.name}.${language === 'java' ? 'java' : language === 'csharp' ? 'cs' : 'ts'}`, content: renderModel(model) })), [classes, language, options])
+  const selectedFile = files.find(file => file.name.startsWith(`${selectedClassName}.`)) || files[0]
+  const code = selectedFile?.content || '// Generated code will appear here'
 
   async function handleCopy() {
     await navigator.clipboard.writeText(code)
@@ -88,16 +110,15 @@ export default function App() {
     const blob = new Blob([code], { type: 'text/plain' })
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `${selectedClass?.name || options.rootClassName || 'Root'}.java`
+    a.download = selectedFile?.name || `${options.rootClassName || 'Root'}.java`
     a.click()
   }
 
   async function handleDownloadAll() {
-    const files = classes.map((c, i) => ({ name: `${c.name}.java`, content: renderJavaClass(c, options) }))
     const blob = await createZip(files)
     const a = document.createElement('a')
     a.href = URL.createObjectURL(blob)
-    a.download = `${options.rootClassName || 'Root'}-classes.zip`
+    a.download = `${options.rootClassName || 'Root'}-${language}-files.zip`
     a.click()
   }
 
@@ -114,8 +135,8 @@ export default function App() {
           <div className="intro-kicker"><Sparkles size={15} aria-hidden="true" /> BROWSER-ONLY DEVELOPER TOOL</div>
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
             <div>
-              <h2 id="tool-heading">Turn payloads into <span>production-ready Java.</span></h2>
-              <p>Paste an API response, tune the model, and get clean POJOs without leaving your workspace.</p>
+              <h2 id="tool-heading">Turn payloads into <span>production-ready code.</span></h2>
+              <p>Paste an API response, choose a target language, and get clean models without leaving your workspace.</p>
             </div>
             <div className="intro-flow" aria-label="Workflow"><span>Paste JSON</span><ArrowRight size={14} aria-hidden="true" /><span>Shape types</span><ArrowRight size={14} aria-hidden="true" /><span>Ship classes</span></div>
           </div>
@@ -123,11 +144,11 @@ export default function App() {
         <div className="flex flex-col lg:flex-row gap-4 flex-1 min-h-0">
         <section className="w-full lg:w-1/2 min-h-[520px] lg:h-full border rounded-xl flex flex-col tool-panel overflow-hidden" aria-labelledby="json-input-heading">
           <JsonEditor theme={theme} value={jsonText} onChange={setJsonText} onSample={() => setJsonText('{\n  "id":101,\n  "name":"John"\n}')} onFormat={() => { try { setJsonText(JSON.stringify(JSON.parse(jsonText), null, 2)) } catch { } }} />
-          <GeneratorOptions options={options} setOptions={setOptions} />
+          <GeneratorOptions options={options} setOptions={setOptions} language={language} />
           <SampleSelector onSelect={s => setJsonText(s)} />
         </section>
         <section className="w-full lg:w-1/2 min-h-[520px] lg:h-full border rounded-xl flex flex-col tool-panel overflow-hidden">
-          <JavaOutput code={code} classes={classes} selectedClass={selectedClass?.name || ''} onSelectClass={setSelectedClassName} onCopy={handleCopy} onDownload={handleDownload} onDownloadAll={handleDownloadAll} />
+          <JavaOutput code={code} files={files} language={language} onSelectLanguage={nextLanguage => { setLanguage(nextLanguage); setSelectedClassName(classes[0]?.name || '') }} selectedClass={selectedFile?.name || ''} onSelectClass={fileName => setSelectedClassName(fileName.replace(/\.(java|cs|ts)$/, ''))} onCopy={handleCopy} onDownload={handleDownload} onDownloadAll={handleDownloadAll} />
           <div aria-live="polite" className="px-3 py-2 text-xs border-t status-bar">
             {error ? <span className="text-red-600 dark:text-red-400">Invalid JSON: {error}</span> : jsonText.trim() ? `Valid JSON • ${classes.length} class${classes.length === 1 ? '' : 'es'} generated` : 'Paste JSON to begin'}
             <span className="float-right">{jsonText.length.toLocaleString()} characters</span>
@@ -136,7 +157,7 @@ export default function App() {
         </section>
         </div>
       </main>
-      <SeoContent />
+      <SeoContent config={routeConfig} />
       <footer className="px-4 py-3 text-sm muted-copy border-t">Built for fast, private transformations in your browser.</footer>
     </div>
   )

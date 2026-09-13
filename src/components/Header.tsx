@@ -8,8 +8,8 @@ export default function Header({ onClear, theme, toggleTheme }: { onClear: () =>
         <img src={`/moses_mandraju_${theme === 'dark' ? 'dark' : 'light'}.png.png`} alt="" />
       </div>
       <div className="navbar-title">
-        <h1 className="text-xl font-bold tracking-tight">JSON <span className="text-[var(--accent)]">→</span> Java POJO</h1>
-        <p className="text-sm muted-copy">Convert JSON into clean Java POJOs instantly.</p>
+        <h1 className="text-xl font-bold tracking-tight">JSON <span className="text-[var(--accent)]">→</span> Code</h1>
+        <p className="text-sm muted-copy">Generate clean Java, C#, and TypeScript models instantly.</p>
       </div>
       <div className="flex items-center justify-end gap-3">
         <a href="https://www.linkedin.com/in/moses-mandraju-5a38b0195" target="_blank" rel="noreferrer" aria-label="Open LinkedIn profile" className="p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500" title="LinkedIn"><Linkedin /></a>

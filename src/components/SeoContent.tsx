@@ -1,116 +1,71 @@
 import React from 'react'
+import { RouteConfig } from '../seo/routeConfig'
 
-const faqItems = [
-  {
-    question: 'What is a POJO in Java?',
-    answer: 'A POJO, or Plain Old Java Object, is a regular Java class used to represent data. It typically contains fields and may include constructors, getters, and setters without requiring a framework base class.'
-  },
-  {
-    question: 'How do I convert JSON to Java classes?',
-    answer: 'Paste a JSON object into the editor, choose the root class name and any generation options, then review the generated Java source. You can copy the selected class or download one class or all generated classes as a ZIP file.'
-  },
-  {
-    question: 'Can this tool handle nested JSON objects?',
-    answer: 'Yes. Nested objects are inferred recursively and generated as separate Java classes. The root class is shown first, and generated nested classes can be selected from the Java output panel.'
-  },
-  {
-    question: 'Can I generate Java classes for JSON arrays?',
-    answer: 'Yes. Arrays of primitive values are generated as List fields, arrays of objects generate a reusable object class, and empty or mixed-type arrays use a safe Object fallback.'
-  },
-  {
-    question: 'Can I generate Lombok classes or Java Records?',
-    answer: 'Yes. The advanced options include Lombok @Data generation and Java Record generation. Lombok output omits manually generated getters and setters.'
-  },
-  {
-    question: 'Can I add Jackson or Gson annotations?',
-    answer: 'Yes. The annotation style can be set to Jackson or Gson. When a Java field name differs from its JSON property, the appropriate property annotation is generated.'
-  },
-  {
-    question: 'Is my JSON uploaded to a server?',
-    answer: 'No. JSON parsing and Java generation happen in the browser. The application does not send your JSON payload or generated source code to a server.'
+export default function SeoContent({ config }: { config: RouteConfig }) {
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: config.faqs.map(item => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: { '@type': 'Answer', text: item.answer }
+    }))
   }
-]
+  const languageName = config.route === 'java' ? 'Java' : config.route === 'csharp' ? 'C#' : config.route === 'typescript' ? 'TypeScript' : 'Code'
+  const converterName = config.route === 'home' ? 'JSON to Code Converter' : `JSON to ${languageName} Converter`
 
-const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: faqItems.map(item => ({
-    '@type': 'Question',
-    name: item.question,
-    acceptedAnswer: {
-      '@type': 'Answer',
-      text: item.answer
-    }
-  }))
-}
-
-export default function SeoContent() {
   return (
     <section className="seo-content" aria-labelledby="seo-heading">
       <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
       <div className="seo-content-inner">
         <header className="seo-lead">
-          <p className="intro-kicker">JAVA MODEL GENERATION GUIDE</p>
-          <h2 id="seo-heading">Build Java models from JSON without the busywork.</h2>
-          <p>JSON to Java POJO Converter turns API payloads into readable Java classes directly in your browser. Use it when you need a quick DTO or model starting point during REST API integration.</p>
+          <p className="intro-kicker">{config.kicker}</p>
+          <h2 id="seo-heading">{config.heading}</h2>
+          <p>{config.intro}</p>
+          <nav className="seo-route-links" aria-label="JSON to Code tools">
+            <a href="/">JSON to Code</a>
+            <a href="/json-to-java">JSON to Java</a>
+            <a href="/json-to-csharp">JSON to C#</a>
+            <a href="/json-to-typescript">JSON to TypeScript</a>
+          </nav>
         </header>
 
         <div className="seo-grid">
           <article className="seo-card seo-card-wide">
-            <h2>What is a JSON to Java POJO Converter?</h2>
-            <p>A JSON to Java POJO converter reads the shape of a JSON payload and maps its properties to Java fields and types. Instead of manually creating repetitive model classes, developers can generate a structured Java representation and then adapt it to their project.</p>
-            <p>This tool is client-side: the JSON is parsed locally, and the generated Java source is treated as plain text in the browser.</p>
+            <h2>What is a {converterName}?</h2>
+            <p>{config.route === 'java' ? 'A JSON to Java converter reads a JSON payload and maps its properties to Java fields and types. It gives developers a structured starting point for POJOs, DTOs, Records, and model classes.' : config.route === 'csharp' ? 'A JSON to C# converter reads a JSON payload and maps its properties to C# classes and properties. It provides a useful starting point for API models and application data contracts.' : config.route === 'typescript' ? 'A JSON to TypeScript converter reads a JSON payload and maps its properties to TypeScript interfaces. It provides a typed starting point for frontend applications and API clients.' : 'A JSON to code converter reads a JSON payload and maps its properties to fields in a selected target language. It generates a structured starting point for Java, C#, or TypeScript.'}</p>
+            <p>This tool is client-side: the JSON is parsed locally, and generated source is treated as plain text in the browser.</p>
           </article>
 
           <article className="seo-card">
-            <h2>How to Convert JSON to Java POJOs</h2>
+            <h2>How to Convert JSON to {languageName}</h2>
             <ol>
               <li><strong>Paste</strong> your JSON into the editor.</li>
-              <li><strong>Configure</strong> the class name, package, and optional generation settings.</li>
-              <li><strong>Generate</strong> and review the Java classes as you edit the payload.</li>
-              <li><strong>Copy or download</strong> the selected class, or download all classes as a ZIP.</li>
+              <li><strong>Choose</strong> the target language and relevant options.</li>
+              <li><strong>Review</strong> the generated {config.formatName}.</li>
+              <li><strong>Copy or download</strong> one file or all files as a ZIP.</li>
             </ol>
           </article>
 
           <article className="seo-card">
-            <h2>Generate Java Classes from Complex JSON</h2>
-            <p>The generator recursively handles nested objects, arrays of primitives, arrays of objects, null values, empty arrays, and mixed-type arrays. That makes it useful for API responses with several levels of nested data and reasonably large payloads.</p>
-            <p>Nested object classes are generated separately, with the root class presented first in the output selector.</p>
+            <h2>Generate {languageName} from Complex JSON</h2>
+            <p>The shared generator handles nested objects, arrays of primitives, arrays of objects, null values, empty arrays, and mixed-type arrays. Nested object types are generated separately, with the root type presented first.</p>
           </article>
 
           <article className="seo-card seo-card-wide">
-            <h2>Java Code Generation Options</h2>
-            <div className="seo-feature-list">
-              <span>Class and package naming</span>
-              <span>camelCase or preserved field names</span>
-              <span>Long or Integer mappings</span>
-              <span>Wrapper or primitive types</span>
-              <span>Java Records and Lombok</span>
-              <span>Jackson or Gson annotations</span>
-              <span>Getters and setters</span>
-              <span>ISO date/time detection as Instant</span>
-            </div>
+            <h2>{languageName} Code Generation Options</h2>
+            <div className="seo-feature-list">{config.features.map(feature => <span key={feature}>{feature}</span>)}</div>
           </article>
 
-          <article className="seo-card">
-            <h2>Why Use a JSON to Java Converter?</h2>
-            <p>It reduces repetitive model creation, shortens the path from an API response to a usable DTO, and gives developers a consistent first draft for Java applications. The result can be copied into a REST client, refined in an IDE, and checked into the project like any other source file.</p>
+          <article className="seo-card seo-card-wide">
+            <h2>Why Use This JSON Converter?</h2>
+            <p>It reduces repetitive model creation, shortens the path from an API response to usable source files, and gives developers a consistent first draft that can be refined in an IDE and checked into a project.</p>
           </article>
         </div>
 
         <section className="seo-faq" aria-labelledby="faq-heading">
-          <div className="seo-faq-heading">
-            <p className="intro-kicker">COMMON QUESTIONS</p>
-            <h2 id="faq-heading">JSON to Java POJO Converter FAQ</h2>
-          </div>
-          <div className="faq-list">
-            {faqItems.map(item => (
-              <details key={item.question}>
-                <summary>{item.question}</summary>
-                <p>{item.answer}</p>
-              </details>
-            ))}
-          </div>
+          <div className="seo-faq-heading"><p className="intro-kicker">COMMON QUESTIONS</p><h2 id="faq-heading">{languageName === 'Code' ? 'JSON to Code FAQ' : `JSON to ${languageName} FAQ`}</h2></div>
+          <div className="faq-list">{config.faqs.map(item => <details key={item.question}><summary>{item.question}</summary><p>{item.answer}</p></details>)}</div>
         </section>
       </div>
     </section>
