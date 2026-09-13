@@ -112,3 +112,9 @@ export function getRouteConfig(pathname: string): RouteConfig {
   if (pathname === '/json-to-typescript') return routeConfigs.typescript
   return routeConfigs.home
 }
+
+export function getPathForLanguage(language: TargetLanguage): string {
+  if (language === 'java') return routeConfigs.java.path
+  if (language === 'csharp') return routeConfigs.csharp.path
+  return routeConfigs.typescript.path
+}

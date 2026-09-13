@@ -4,6 +4,7 @@ import { safeParseJson } from '../src/generator/jsonParser'
 import { buildCommonModel } from '../src/generator/modelBuilder'
 import { renderCSharpModel } from '../src/generator/csharpRenderer'
 import { renderTypeScriptModel } from '../src/generator/typescriptRenderer'
+import { getPathForLanguage, getRouteConfig } from '../src/seo/routeConfig'
 
 describe('Generator comprehensive', () => {
   it('simple object', () => {
@@ -160,5 +161,15 @@ describe('Generator comprehensive', () => {
     expect(out).toContain('export interface Response')
     expect(out).toContain('user: User;')
     expect(out).toContain('tags: string[];')
+  })
+
+  it('maps SEO routes and language navigation bidirectionally', () => {
+    expect(getRouteConfig('/').language).toBe('java')
+    expect(getRouteConfig('/json-to-java').language).toBe('java')
+    expect(getRouteConfig('/json-to-csharp').language).toBe('csharp')
+    expect(getRouteConfig('/json-to-typescript').language).toBe('typescript')
+    expect(getPathForLanguage('java')).toBe('/json-to-java')
+    expect(getPathForLanguage('csharp')).toBe('/json-to-csharp')
+    expect(getPathForLanguage('typescript')).toBe('/json-to-typescript')
   })
 })

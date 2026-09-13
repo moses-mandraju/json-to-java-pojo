@@ -13,10 +13,11 @@ import { renderTypeScriptModel } from './generator/typescriptRenderer'
 import { createZip } from './utils/zip'
 import { CodeFile, CommonClass, TargetLanguage } from './types'
 import SeoContent from './components/SeoContent'
-import { getRouteConfig } from './seo/routeConfig'
+import { getPathForLanguage, getRouteConfig } from './seo/routeConfig'
 
 export default function App() {
-  const routeConfig = getRouteConfig(window.location.pathname)
+  const [pathname, setPathname] = useState(() => window.location.pathname)
+  const routeConfig = getRouteConfig(pathname)
   const [jsonText, setJsonText] = useState('')
   const [theme, setTheme] = useState<'dark' | 'light'>(() => {
     const saved = window.localStorage.getItem('json-to-java-theme')
@@ -36,9 +37,10 @@ export default function App() {
     fieldNaming: 'preserve'
   })
   const [error, setError] = useState<string | null>(null)
-  const [language, setLanguage] = useState<TargetLanguage>(routeConfig.language)
   const [classes, setClasses] = useState<CommonClass[]>([])
   const [selectedClassName, setSelectedClassName] = useState('')
+
+  const language = routeConfig.language
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
@@ -46,6 +48,19 @@ export default function App() {
     const favicon = document.getElementById('app-favicon') as HTMLLinkElement | null
     if (favicon) favicon.href = `/moses_mandraju_${theme === 'dark' ? 'dark' : 'light'}.png.png`
   }, [theme])
+
+  useEffect(() => {
+    const handlePopState = () => setPathname(window.location.pathname)
+    window.addEventListener('popstate', handlePopState)
+    return () => window.removeEventListener('popstate', handlePopState)
+  }, [])
+
+  function navigateToLanguage(nextLanguage: TargetLanguage) {
+    const nextRoute = getPathForLanguage(nextLanguage)
+    if (window.location.pathname === nextRoute) return
+    window.history.pushState({}, '', nextRoute)
+    setPathname(nextRoute)
+  }
 
   useEffect(() => {
     document.title = routeConfig.title
@@ -58,6 +73,17 @@ export default function App() {
     document.querySelector('meta[property="og:description"]')?.setAttribute('content', routeConfig.ogDescription)
     document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', routeConfig.title)
     document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', routeConfig.description)
+    const schema = document.getElementById('app-schema')
+    schema?.replaceChildren(document.createTextNode(JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      name: routeConfig.title.split(' | ')[0],
+      url: `https://json-to-java-pojo.vercel.app${routeConfig.path}`,
+      applicationCategory: 'DeveloperApplication',
+      operatingSystem: 'Any',
+      description: routeConfig.description,
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' }
+    })))
   }, [routeConfig])
 
   useEffect(() => {
@@ -148,7 +174,7 @@ export default function App() {
           <SampleSelector onSelect={s => setJsonText(s)} />
         </section>
         <section className="w-full lg:w-1/2 min-h-[520px] lg:h-full border rounded-xl flex flex-col tool-panel overflow-hidden">
-          <JavaOutput code={code} files={files} language={language} onSelectLanguage={nextLanguage => { setLanguage(nextLanguage); setSelectedClassName(classes[0]?.name || '') }} selectedClass={selectedFile?.name || ''} onSelectClass={fileName => setSelectedClassName(fileName.replace(/\.(java|cs|ts)$/, ''))} onCopy={handleCopy} onDownload={handleDownload} onDownloadAll={handleDownloadAll} />
+          <JavaOutput code={code} files={files} language={language} onSelectLanguage={navigateToLanguage} selectedClass={selectedFile?.name || ''} onSelectClass={fileName => setSelectedClassName(fileName.replace(/\.(java|cs|ts)$/, ''))} onCopy={handleCopy} onDownload={handleDownload} onDownloadAll={handleDownloadAll} />
           <div aria-live="polite" className="px-3 py-2 text-xs border-t status-bar">
             {error ? <span className="text-red-600 dark:text-red-400">Invalid JSON: {error}</span> : jsonText.trim() ? `Valid JSON • ${classes.length} class${classes.length === 1 ? '' : 'es'} generated` : 'Paste JSON to begin'}
             <span className="float-right">{jsonText.length.toLocaleString()} characters</span>
