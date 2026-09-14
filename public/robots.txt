@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://json-to-java-pojo.vercel.app/sitemap.xml
+Sitemap: https://json-to-code.vercel.app/sitemap.xml
